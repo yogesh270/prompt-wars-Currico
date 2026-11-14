@@ -87,7 +87,7 @@ export interface GapReport {
 // ─── Plan ─────────────────────────────────────────────────────────────────────
 
 export interface Module {
-  id: string;              // `${skillId}:${courseId}`
+  id: string;              // `${skillId}:${courseId}` or `${skillId}:${courseId}:p1`
   skillId: string;
   courseId: string;
   title: string;
@@ -96,6 +96,7 @@ export interface Module {
   rationale: string;
   status: "todo" | "in-progress" | "done";
   diff?: ModuleDiff;
+  part?: { current: number; total: number };
 }
 
 export interface Plan {
