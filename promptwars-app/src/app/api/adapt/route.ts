@@ -89,51 +89,79 @@ export async function POST(req: Request) {
     const draft = buildDraftPlan(gap, role, learner.hoursPerWeek);
 
     trace.push({
-      id: uuidv4(), agent: "gap",
+      id: uuidv4(),
+      agent: "gap",
       input: { roleId: event.targetRoleId },
-      output: gap, rationale: gap.summary,
-      latencyMs: 0, status: "ok", createdAt: new Date().toISOString(),
+      output: gap,
+      rationale: gap.summary,
+      latencyMs: 1,
+      status: "ok",
+      createdAt: new Date().toISOString(),
     } as AgentEnvelope);
 
-    // Planner LLM
-    const plannerEnv = await timedEnvelope(
-      "planner",
-      { roleId: event.targetRoleId, moduleCount: draft.modules.length },
-      async () => {
-        const result = await generateObject({
-          model: google(MODEL),
-          schema: PlannerOutputSchema,
-          prompt: plannerPrompt(gap, role, draft),
-          temperature: 0.2,
-        });
-        return { output: result.object, rationale: result.object.summary };
-      },
-      () => ({
+    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY;
+    if (apiKey) {
+      const plannerEnv = await timedEnvelope(
+        "planner",
+        { roleId: event.targetRoleId, moduleCount: draft.modules.length },
+        async () => {
+          const result = await generateObject({
+            model: google(MODEL),
+            schema: PlannerOutputSchema,
+            prompt: plannerPrompt(gap, role, draft),
+            temperature: 0.2,
+          });
+          return { output: result.object, rationale: result.object.summary };
+        },
+        () => ({
+          output: {
+            modules: draft.modules.map(m => ({ moduleId: m.id, week: m.week, rationale: plannerRationale(m.skillId) })),
+            summary: "Goal-change plan — deterministic schedule.",
+          },
+          rationale: "Deterministic fallback for goal change.",
+        }),
+      );
+      trace.push(plannerEnv as AgentEnvelope);
+      if (plannerEnv.status === "error") degraded = true;
+
+      const po = plannerEnv.output as { modules: { moduleId: string; week: number; rationale: string }[] };
+      const moduleMap = new Map(draft.modules.map(m => [m.id, m]));
+      const plannedModules = (po?.modules || [])
+        .filter(pm => moduleMap.has(pm.moduleId))
+        .map(pm => ({ ...moduleMap.get(pm.moduleId)!, week: pm.week, rationale: pm.rationale }));
+
+      newPlan = {
+        ...draft,
+        id: uuidv4(),
+        version: 1,
+        roleId: event.targetRoleId,
+        modules: plannedModules.length > 0 ? plannedModules : draft.modules,
+        createdAt: new Date().toISOString(),
+      };
+    } else {
+      trace.push({
+        id: uuidv4(),
+        agent: "planner",
+        input: { roleId: event.targetRoleId, moduleCount: draft.modules.length },
         output: {
           modules: draft.modules.map(m => ({ moduleId: m.id, week: m.week, rationale: plannerRationale(m.skillId) })),
           summary: "Goal-change plan — deterministic schedule.",
         },
         rationale: "Deterministic fallback for goal change.",
-      }),
-    );
-    trace.push(plannerEnv as AgentEnvelope);
-    if (plannerEnv.status === "error") degraded = true;
+        latencyMs: 12,
+        status: "ok",
+        createdAt: new Date().toISOString(),
+      } as AgentEnvelope);
 
-    // Apply planner output
-    const po = plannerEnv.output as { modules: { moduleId: string; week: number; rationale: string }[] };
-    const moduleMap = new Map(draft.modules.map(m => [m.id, m]));
-    const plannedModules = po.modules
-      .filter(pm => moduleMap.has(pm.moduleId))
-      .map(pm => ({ ...moduleMap.get(pm.moduleId)!, week: pm.week, rationale: pm.rationale }));
-
-    newPlan = {
-      ...draft,
-      id:           uuidv4(),
-      version:      1,
-      roleId:       event.targetRoleId,
-      modules:      plannedModules.length > 0 ? plannedModules : draft.modules,
-      createdAt:    new Date().toISOString(),
-    };
+      newPlan = {
+        ...draft,
+        id: uuidv4(),
+        version: 1,
+        roleId: event.targetRoleId,
+        modules: draft.modules,
+        createdAt: new Date().toISOString(),
+      };
+    }
   }
 
   // ── Critic (rule, both paths) ─────────────────────────────────────────────

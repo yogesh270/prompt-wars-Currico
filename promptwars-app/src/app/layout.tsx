@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PromptWars — Adaptive Learning Planner",
-  description: "AI-powered adaptive learning planner for the PromptWars × RTC Hackathon",
+  title: "Currico — AI Adaptive Learning Planner",
+  description: "Deterministic skill graphs, multi-agent adaptation, and real-time curriculum diffs.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
