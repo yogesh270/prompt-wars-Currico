@@ -1,0 +1,23 @@
+Problem Statement
+Organizations and universities find it difficult to identify what skills their employees or students lack and what they need to learn to achieve their career goals.
+Traditional learning platforms provide the same courses to everyone without considering their existing skills, learning progress, or career interests.
+Your Challenge
+Build an AI-powered learning platform that understands an individual's skills, identifies missing skills, and recommends a personalized learning path to help them achieve their target career.
+Expected Features
+- User Profile: Maintain learner details, existing skills, certifications, projects and career goals.
+- Skill Analysis: Identify strengths and weaknesses based on skills and assessments.
+- Career Matching: Compare current skills with the requirements of a selected job role.
+- Learning Recommendations: Suggest relevant courses, tutorials and practical exercises.
+- Progress Tracking: Monitor learning progress and assessment performance.
+- AI Mentor: Provide guidance and update learning recommendations based on individual performance.
+Agentic AI Requirement
+Use multiple specialized AI agents that collaborate to analyze skills, recommend learning resources, evaluate progress and guide learners.
+The system should be capable of adjusting its recommendations when a learner changes their career goal or performs poorly in an assessment.
+Sample Scenario
+A student wants to become a Full Stack Developer.
+- Current skills: Python, SQL and basic HTML.
+- Missing skills: JavaScript, React, Node.js.
+- Target: Become a Full Stack Developer.
+Your platform should identify the skill gaps, create a learning roadmap, recommend resources and track the student's progress.
+Expected Deliverable
+A working AI-powered application that demonstrates personalized learning recommendations, AI agent collaboration and adaptive progress tracking.
