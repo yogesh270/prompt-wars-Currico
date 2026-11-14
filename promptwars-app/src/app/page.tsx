@@ -200,17 +200,6 @@ export default function Home() {
   const circ = 2 * Math.PI * r;
   const arc = circ * readiness;
 
-  if (!state.mounted) {
-    return (
-      <div className="min-h-screen bg-[#07080C] flex items-center justify-center">
-        <div className="flex items-center gap-3 text-[#94A3B8] font-mono text-sm">
-          <span className="w-2.5 h-2.5 bg-[#6366F1] rounded-full animate-ping"></span>
-          Initializing Currico Adaptive Core...
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-[#07080C] text-[#F8FAFC] font-sans selection:bg-[#6366F1] selection:text-white">
       {/* ── Top Navigation Bar ── */}

@@ -111,7 +111,7 @@ function heuristicSkillExtraction(text: string): LearnerSkill[] {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { text = "" } = body;
+    const text: string = body.text || body.resumeText || "";
 
     if (!text.trim()) {
       return NextResponse.json({ skills: [], extractedName: "" }, { status: 400 });
@@ -127,7 +127,8 @@ export async function POST(req: Request) {
       }
     }
 
-    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY;
+    const rawKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY;
+    const apiKey = (rawKey && !rawKey.includes("your-google-ai-api-key") && rawKey.length > 20) ? rawKey : undefined;
 
     // Fast deterministic fallback if no API key
     if (!apiKey) {

@@ -126,7 +126,8 @@ export async function POST(req: Request) {
 
   // ── 4. Planner (LLM or deterministic fallback if no key) ──────────────────
   let planV1: Plan = draft;
-  const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY;
+  const rawKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY;
+  const apiKey = (rawKey && !rawKey.includes("your-google-ai-api-key") && rawKey.length > 20) ? rawKey : undefined;
 
   if (apiKey) {
     const plannerEnv = await timedEnvelope(

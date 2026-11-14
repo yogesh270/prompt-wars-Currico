@@ -106,7 +106,7 @@ export async function POST(req: Request) {
     newPlan = {
       ...currentPlan,
       id: uuidv4(),
-      version: currentPlan.version + 1,
+      version: currentPlan.version,
       modules: modulesWithRemediation,
     };
 
@@ -117,12 +117,12 @@ export async function POST(req: Request) {
         trigger: "QUIZ_FAILED",
         weakSkills,
         budget: learner.hoursPerWeek,
-        version: `v${newPlan.version}`,
+        version: `v${currentPlan.version + 1}`,
       },
       output: {
         action: "REPLAN_SCHEDULE",
         remediationModulesInjected: weakSkills.length,
-        version: `v${newPlan.version}`,
+        version: `v${currentPlan.version + 1}`,
         summary: `Adaptive Planner injected remedial reinforcement for ${weakSkills.join(", ")} and redistributed module chunks across weeks to enforce strict ${learner.hoursPerWeek}h weekly cap.`,
       },
       rationale: `Adaptive replan triggered by quiz failure. Inserted targeted remedial modules and re-chunked roadmap.`,
@@ -149,7 +149,8 @@ export async function POST(req: Request) {
       createdAt: new Date().toISOString(),
     } as AgentEnvelope);
 
-    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY;
+    const rawKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY;
+    const apiKey = (rawKey && !rawKey.includes("your-google-ai-api-key") && rawKey.length > 20) ? rawKey : undefined;
     if (apiKey) {
       const plannerEnv = await timedEnvelope(
         "planner",
