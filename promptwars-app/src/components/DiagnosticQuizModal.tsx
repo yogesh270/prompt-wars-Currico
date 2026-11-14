@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import type { Learner, RoleId } from "@/lib/types";
+import type { Learner } from "@/lib/types";
 import { QUIZ_QUESTIONS, ROLES, SKILLS } from "@/lib/seed";
 import { saveLearnerToSupabase } from "@/lib/supabase";
 
@@ -125,55 +125,55 @@ export default function DiagnosticQuizModal({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
-      <div className="bg-[#101014] border border-neutral-800 rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden ring-1 ring-white/5">
+    <div className="fixed inset-0 bg-black/85 backdrop-blur-xl flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+      <div className="bg-[#151923] border border-white/10 rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden ring-1 ring-white/10">
         
         {/* Modal Header */}
-        <div className="p-6 border-b border-neutral-800/80 flex items-center justify-between bg-neutral-950/60">
+        <div className="p-6 border-b border-white/[0.08] flex items-center justify-between bg-[#0E1117]/80">
           <div>
             <div className="flex items-center gap-2.5">
-              <span className="w-6 h-6 rounded bg-indigo-950 border border-indigo-700/60 flex items-center justify-center text-xs text-indigo-300">
+              <span className="w-7 h-7 rounded-lg bg-[#6366F1]/15 border border-[#6366F1]/30 flex items-center justify-center text-sm text-[#6366F1]">
                 📝
               </span>
-              <h3 className="text-base font-bold text-white tracking-tight">
+              <h3 className="text-base font-bold text-[#F8FAFC] tracking-tight">
                 Live Diagnostic Assessment
               </h3>
-              <span className="text-[10px] font-mono bg-indigo-950/80 border border-indigo-800 text-indigo-300 px-2 py-0.5 rounded">
+              <span className="text-[10px] font-mono bg-[#6366F1]/15 border border-[#6366F1]/30 text-[#6366F1] px-2 py-0.5 rounded font-semibold">
                 {role.title}
               </span>
             </div>
-            <p className="text-xs text-neutral-400 mt-1">
-              5 calibrated technical questions targeting active skill gaps. Scores calibrate readiness in real time.
+            <p className="text-xs text-[#94A3B8] mt-1">
+              5 calibrated technical questions targeting active skill gaps. Scores recalibrate your readiness in real time.
             </p>
           </div>
 
           <button
             onClick={onClose}
-            className="text-neutral-400 hover:text-white text-lg font-mono leading-none p-1.5 rounded-lg hover:bg-neutral-800/60 transition-colors"
+            className="text-[#94A3B8] hover:text-[#F8FAFC] text-lg font-mono leading-none p-1.5 rounded-lg hover:bg-white/[0.06] transition-colors"
           >
             ✕
           </button>
         </div>
 
         {/* Quick Testing Actions Toolbar */}
-        <div className="bg-neutral-900/50 px-6 py-2.5 border-b border-neutral-800/60 flex flex-wrap items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-2 text-neutral-400 font-mono text-[11px]">
+        <div className="bg-[#0E1117] px-6 py-2.5 border-b border-white/[0.08] flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2 text-[#94A3B8] font-mono tabular-nums text-[11px]">
             <span>Progress:</span>
-            <span className="font-bold text-indigo-400">{answeredCount}/{questions.length} answered</span>
+            <span className="font-bold text-[#06B6D4]">{answeredCount}/{questions.length} answered</span>
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-[10px] uppercase font-mono text-neutral-500">Quick Test:</span>
+            <span className="text-[10px] uppercase font-mono text-[#94A3B8]">Quick Test:</span>
             <button
               onClick={handleAutoFillHigh}
-              className="text-[11px] font-mono bg-emerald-950/60 hover:bg-emerald-900/60 border border-emerald-800/80 text-emerald-300 px-2 py-1 rounded transition-colors"
+              className="text-[11px] font-mono bg-[#10B981]/15 hover:bg-[#10B981]/25 border border-[#10B981]/30 text-[#10B981] px-2.5 py-1 rounded transition-colors font-medium"
               title="Select all correct answers to test mastery upgrade"
             >
               ⚡ High Score (5/5)
             </button>
             <button
               onClick={handleAutoFillLow}
-              className="text-[11px] font-mono bg-rose-950/60 hover:bg-rose-900/60 border border-rose-800/80 text-rose-300 px-2 py-1 rounded transition-colors"
+              className="text-[11px] font-mono bg-[#F43F5E]/15 hover:bg-[#F43F5E]/25 border border-[#F43F5E]/30 text-[#F43F5E] px-2.5 py-1 rounded transition-colors font-medium"
               title="Select low score to test gap detection"
             >
               ⚠️ Low Score (1/5)
@@ -182,7 +182,7 @@ export default function DiagnosticQuizModal({
         </div>
 
         {/* Questions Body */}
-        <div className="p-6 overflow-y-auto space-y-6 flex-1">
+        <div className="p-6 overflow-y-auto space-y-5 flex-1 bg-[#07080C]">
           {questions.map((q, index) => {
             const skillName = SKILLS.find(s => s.id === q.skillId)?.name || q.skillId;
             const currentAnswer = answers[q.questionId];
@@ -190,26 +190,26 @@ export default function DiagnosticQuizModal({
             return (
               <div
                 key={q.questionId}
-                className="bg-neutral-950/70 border border-neutral-800/90 rounded-xl p-4 space-y-3 hover:border-neutral-700/80 transition-all"
+                className="card-surface rounded-xl p-4 space-y-3 hover:border-white/20 transition-all"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-2">
-                    <span className="w-5 h-5 rounded bg-neutral-900 border border-neutral-800 flex items-center justify-center text-[10px] font-mono font-bold text-neutral-400">
+                    <span className="w-5 h-5 rounded bg-[#151923] border border-white/10 flex items-center justify-center text-[10px] font-mono font-bold text-[#06B6D4] tabular-nums">
                       {index + 1}
                     </span>
-                    <span className="text-[10px] font-mono uppercase bg-indigo-950/60 text-indigo-300 border border-indigo-800/60 px-2 py-0.5 rounded">
+                    <span className="text-[10px] font-mono uppercase bg-[#06B6D4]/15 text-[#06B6D4] border border-[#06B6D4]/30 px-2 py-0.5 rounded font-semibold">
                       Skill: {skillName}
                     </span>
                   </div>
 
                   {currentAnswer && (
-                    <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/50 border border-emerald-800/50 px-2 py-0.5 rounded">
+                    <span className="text-[10px] font-mono text-[#10B981] bg-[#10B981]/15 border border-[#10B981]/30 px-2 py-0.5 rounded font-semibold">
                       Answered
                     </span>
                   )}
                 </div>
 
-                <p className="text-xs font-semibold text-neutral-200 leading-snug">
+                <p className="text-xs font-semibold text-[#F8FAFC] leading-snug">
                   {q.question}
                 </p>
 
@@ -222,8 +222,8 @@ export default function DiagnosticQuizModal({
                         onClick={() => handleSelect(q.questionId, opt)}
                         className={`flex items-center gap-2.5 text-xs p-2.5 rounded-lg border transition-all cursor-pointer ${
                           isSelected
-                            ? "bg-indigo-950/70 border-indigo-500/80 text-white font-medium shadow-sm shadow-indigo-950/40"
-                            : "bg-neutral-900/60 border-neutral-800 text-neutral-300 hover:bg-neutral-900 hover:border-neutral-700"
+                            ? "bg-[#6366F1]/20 border-[#6366F1] text-[#F8FAFC] font-medium shadow-[0_0_12px_rgba(99,102,241,0.2)]"
+                            : "bg-[#07080C]/80 border-white/[0.08] text-[#94A3B8] hover:bg-[#151923] hover:border-white/20 hover:text-[#F8FAFC]"
                         }`}
                       >
                         <input
@@ -232,7 +232,7 @@ export default function DiagnosticQuizModal({
                           value={opt}
                           checked={isSelected}
                           onChange={() => handleSelect(q.questionId, opt)}
-                          className="accent-indigo-500 shrink-0"
+                          className="accent-[#6366F1] shrink-0"
                         />
                         <span className="leading-snug break-words">{opt}</span>
                       </label>
@@ -245,10 +245,10 @@ export default function DiagnosticQuizModal({
         </div>
 
         {/* Modal Footer */}
-        <div className="p-4 border-t border-neutral-800/80 bg-neutral-950/80 flex items-center justify-between gap-3">
+        <div className="p-4 border-t border-white/[0.08] bg-[#0E1117] flex items-center justify-between gap-3">
           <button
             onClick={onClose}
-            className="text-xs font-mono text-neutral-400 hover:text-white px-4 py-2 rounded-xl border border-neutral-800 hover:bg-neutral-900 transition-colors"
+            className="text-xs font-mono text-[#94A3B8] hover:text-[#F8FAFC] px-4 py-2 rounded-xl border border-white/10 hover:bg-white/[0.04] transition-colors"
           >
             Cancel
           </button>
@@ -256,7 +256,7 @@ export default function DiagnosticQuizModal({
           <button
             onClick={handleSubmit}
             disabled={!isComplete || isSubmitting}
-            className="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white text-xs font-semibold px-6 py-2.5 rounded-xl shadow-md shadow-indigo-600/30 transition-all flex items-center gap-2 cursor-pointer disabled:cursor-not-allowed"
+            className="btn-indigo-glow disabled:opacity-40 text-xs font-semibold px-6 py-2.5 rounded-xl transition-all flex items-center gap-2 cursor-pointer disabled:cursor-not-allowed"
           >
             {isSubmitting && <span className="w-3.5 h-3.5 border-2 border-white/20 border-t-white rounded-full animate-spin"></span>}
             <span>{isSubmitting ? "Recalibrating Pipeline..." : `Submit Assessment (${answeredCount}/5)`}</span>

@@ -51,21 +51,28 @@ ALTER TABLE public.learner_skills ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.curriculum_plans ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.agent_traces ENABLE ROW LEVEL SECURITY;
 
--- Allow public read/write access for hackathon / client demonstration
+-- Allow public read/write access for hackathon / client demonstration (Idempotent)
+DROP POLICY IF EXISTS "Allow public read access on learners" ON public.learners;
 CREATE POLICY "Allow public read access on learners" ON public.learners FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Allow public insert/update on learners" ON public.learners;
 CREATE POLICY "Allow public insert/update on learners" ON public.learners FOR ALL USING (true) WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Allow public read access on learner_skills" ON public.learner_skills;
 CREATE POLICY "Allow public read access on learner_skills" ON public.learner_skills FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Allow public insert/update on learner_skills" ON public.learner_skills;
 CREATE POLICY "Allow public insert/update on learner_skills" ON public.learner_skills FOR ALL USING (true) WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Allow public read access on curriculum_plans" ON public.curriculum_plans;
 CREATE POLICY "Allow public read access on curriculum_plans" ON public.curriculum_plans FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Allow public insert/update on curriculum_plans" ON public.curriculum_plans;
 CREATE POLICY "Allow public insert/update on curriculum_plans" ON public.curriculum_plans FOR ALL USING (true) WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Allow public read access on agent_traces" ON public.agent_traces;
 CREATE POLICY "Allow public read access on agent_traces" ON public.agent_traces FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Allow public insert/update on agent_traces" ON public.agent_traces;
 CREATE POLICY "Allow public insert/update on agent_traces" ON public.agent_traces FOR ALL USING (true) WITH CHECK (true);
 
 -- Indexes for performance
 CREATE INDEX IF NOT EXISTS idx_learner_skills_learner ON public.learner_skills(learner_id);
 CREATE INDEX IF NOT EXISTS idx_curriculum_plans_learner ON public.curriculum_plans(learner_id);
 CREATE INDEX IF NOT EXISTS idx_agent_traces_plan ON public.agent_traces(plan_id);
-

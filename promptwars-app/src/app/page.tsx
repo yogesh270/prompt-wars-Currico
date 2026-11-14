@@ -202,9 +202,9 @@ export default function Home() {
 
   if (!state.mounted) {
     return (
-      <div className="min-h-screen bg-[#09090b] flex items-center justify-center">
-        <div className="flex items-center gap-3 text-neutral-400 font-mono text-sm">
-          <span className="w-2.5 h-2.5 bg-indigo-500 rounded-full animate-ping"></span>
+      <div className="min-h-screen bg-[#07080C] flex items-center justify-center">
+        <div className="flex items-center gap-3 text-[#94A3B8] font-mono text-sm">
+          <span className="w-2.5 h-2.5 bg-[#6366F1] rounded-full animate-ping"></span>
           Initializing Currico Adaptive Core...
         </div>
       </div>
@@ -212,36 +212,36 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-neutral-100 font-sans selection:bg-indigo-500 selection:text-white">
+    <div className="min-h-screen bg-[#07080C] text-[#F8FAFC] font-sans selection:bg-[#6366F1] selection:text-white">
       {/* ── Top Navigation Bar ── */}
-      <header className="border-b border-neutral-800/80 bg-[#0d0d10]/80 backdrop-blur-md sticky top-0 z-40 px-6 py-3 flex flex-wrap items-center justify-between gap-4">
+      <header className="border-b border-white/[0.08] bg-[#0E1117]/90 backdrop-blur-xl sticky top-0 z-40 px-6 py-3 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-5">
           <div className="flex items-center gap-2.5">
-            <span className="w-7 h-7 rounded-lg bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center font-black text-white text-sm shadow-md shadow-indigo-500/25">
+            <span className="w-7 h-7 rounded-lg bg-gradient-to-tr from-[#6366F1] to-[#4F46E5] flex items-center justify-center font-black text-white text-sm shadow-[0_0_20px_rgba(99,102,241,0.3)]">
               C
             </span>
             <div className="leading-tight">
-              <span className="font-bold text-base tracking-tight text-white flex items-center gap-2">
+              <span className="font-bold text-base tracking-tight text-[#F8FAFC] flex items-center gap-2">
                 <span>Currico</span>
-                <span className="text-[10px] bg-indigo-950/80 text-indigo-300 font-mono px-1.5 py-0.2 rounded border border-indigo-800">
+                <span className="text-[10px] bg-[#6366F1]/15 text-[#6366F1] font-mono px-1.5 py-0.2 rounded border border-[#6366F1]/30 font-semibold">
                   v2.0
                 </span>
               </span>
             </div>
           </div>
 
-          <div className="h-4 w-px bg-neutral-800 hidden md:block"></div>
+          <div className="h-4 w-px bg-white/10 hidden md:block"></div>
 
           {/* Clickable Custom Learner Pill */}
           <button
             onClick={() => setShowProfileModal(true)}
             title="Click to customize baseline skills or upload resume"
-            className="flex items-center gap-2 bg-neutral-900/90 border border-neutral-800 hover:border-indigo-500/70 px-3 py-1.5 rounded-lg transition-colors cursor-pointer group"
+            className="flex items-center gap-2 bg-[#07080C] border border-white/10 hover:border-[#6366F1]/60 px-3 py-1.5 rounded-lg transition-colors cursor-pointer group shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]"
           >
-            <span className="text-xs text-neutral-400">Learner:</span>
-            <span className="text-xs font-semibold text-white group-hover:text-indigo-300 flex items-center gap-1.5">
+            <span className="text-xs text-[#94A3B8]">Learner:</span>
+            <span className="text-xs font-semibold text-[#F8FAFC] group-hover:text-[#6366F1] flex items-center gap-1.5">
               <span>{state.learner.name}</span>
-              <span className="text-[10px] text-neutral-500 group-hover:text-indigo-400 font-mono">✎ Edit</span>
+              <span className="text-[10px] text-[#94A3B8] group-hover:text-[#06B6D4] font-mono">✎ Edit</span>
             </span>
           </button>
 
@@ -249,22 +249,22 @@ export default function Home() {
           {state.learner.name !== PRIYA_PERSONA.name && (
             <button
               onClick={handleResetToPriya}
-              className="text-[11px] font-mono text-neutral-400 hover:text-white bg-neutral-900 border border-neutral-800 px-2 py-1 rounded-md transition-colors"
+              className="text-[11px] font-mono text-[#94A3B8] hover:text-[#F8FAFC] bg-[#07080C] border border-white/10 px-2 py-1 rounded-md transition-colors"
             >
               Reset to Priya Preset
             </button>
           )}
 
           {/* Goal Selector */}
-          <div className="flex items-center gap-2 bg-neutral-900/90 border border-neutral-800 px-3 py-1.5 rounded-lg">
-            <span className="text-xs text-neutral-400">Target Role:</span>
+          <div className="flex items-center gap-2 bg-[#07080C] border border-white/10 px-3 py-1.5 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
+            <span className="text-xs text-[#94A3B8]">Target Role:</span>
             <select
               value={state.learner.targetRoleId}
               onChange={e => handleRoleChange(e.target.value as RoleId)}
-              className="bg-transparent text-xs font-semibold text-indigo-300 focus:outline-none cursor-pointer"
+              className="bg-transparent text-xs font-semibold text-[#06B6D4] focus:outline-none cursor-pointer"
             >
               {ROLES.map(r => (
-                <option key={r.id} value={r.id} className="bg-neutral-900 text-neutral-200">
+                <option key={r.id} value={r.id} className="bg-[#0E1117] text-[#F8FAFC]">
                   {r.title}
                 </option>
               ))}
@@ -272,8 +272,8 @@ export default function Home() {
           </div>
 
           {/* Budget Slider */}
-          <div className="flex items-center gap-2.5 bg-neutral-900/90 border border-neutral-800 px-3 py-1.5 rounded-lg">
-            <span className="text-xs text-neutral-400">Commitment:</span>
+          <div className="flex items-center gap-2.5 bg-[#07080C] border border-white/10 px-3 py-1.5 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
+            <span className="text-xs text-[#94A3B8]">Commitment:</span>
             <input
               type="range"
               min={2}
@@ -281,21 +281,21 @@ export default function Home() {
               step={1}
               value={state.learner.hoursPerWeek}
               onChange={e => dispatch({ type: "SET_LEARNER", payload: { hoursPerWeek: Number(e.target.value) } })}
-              className="w-16 accent-indigo-500 cursor-pointer"
+              className="w-16 accent-[#6366F1] cursor-pointer"
             />
-            <span className="text-xs font-mono font-bold text-indigo-400 w-7">{state.learner.hoursPerWeek}h</span>
+            <span className="text-xs font-mono tabular-nums font-bold text-[#06B6D4] w-7">{state.learner.hoursPerWeek}h</span>
           </div>
         </div>
 
         {/* Right Action Controls */}
         <div className="flex items-center gap-3">
           {/* Supabase Status Pill */}
-          <span className={`text-[10px] font-mono px-2.5 py-1 rounded-md border flex items-center gap-1.5 ${
+          <span className={`text-[10px] font-mono px-2.5 py-1 rounded-md border flex items-center gap-1.5 font-semibold ${
             isSupabaseConfigured
-              ? "bg-emerald-950/80 text-emerald-300 border-emerald-800"
-              : "bg-amber-950/70 text-amber-300 border-amber-800/80"
+              ? "bg-[#10B981]/15 text-[#10B981] border-[#10B981]/30"
+              : "bg-[#F59E0B]/15 text-[#F59E0B] border-[#F59E0B]/30"
           }`}>
-            <span className={`w-1.5 h-1.5 rounded-full ${isSupabaseConfigured ? "bg-emerald-400" : "bg-amber-400"}`}></span>
+            <span className={`w-1.5 h-1.5 rounded-full ${isSupabaseConfigured ? "bg-[#10B981]" : "bg-[#F59E0B]"}`}></span>
             {isSupabaseConfigured ? "DB: SUPABASE LIVE" : "DB: LOCAL FALLBACK"}
           </span>
 
@@ -304,17 +304,17 @@ export default function Home() {
             onClick={() => dispatch({ type: "SET_MODE", payload: state.mode === "live" ? "replay" : "live" })}
             className={`text-xs px-3 py-1.5 rounded-lg border font-mono transition-all flex items-center gap-2 cursor-pointer ${
               state.mode === "replay"
-                ? "bg-amber-950/70 border-amber-600/70 text-amber-300"
-                : "bg-neutral-900 border-neutral-700/80 text-neutral-300 hover:border-neutral-500"
+                ? "bg-[#F59E0B]/15 border-[#F59E0B]/40 text-[#F59E0B]"
+                : "bg-[#07080C] border-white/10 text-[#94A3B8] hover:border-white/20 hover:text-[#F8FAFC]"
             }`}
           >
-            <span className={`w-2 h-2 rounded-full ${state.mode === "live" ? "bg-emerald-400 animate-pulse" : "bg-amber-400"}`}></span>
+            <span className={`w-2 h-2 rounded-full ${state.mode === "live" ? "bg-[#10B981] animate-pulse" : "bg-[#F59E0B]"}`}></span>
             {state.mode === "live" ? "LIVE ENGINE" : "REPLAY CACHE"}
           </button>
 
           <button
             onClick={() => { clearRuns(); dispatch({ type: "RESET_DEMO" }); }}
-            className="text-xs px-3 py-1.5 rounded-lg border border-neutral-800 bg-neutral-900 text-neutral-400 hover:text-neutral-200 hover:border-neutral-700 transition-colors cursor-pointer"
+            className="text-xs px-3 py-1.5 rounded-lg border border-white/10 bg-[#07080C] text-[#94A3B8] hover:text-[#F8FAFC] hover:border-white/20 transition-colors cursor-pointer"
           >
             Reset
           </button>
@@ -323,12 +323,12 @@ export default function Home() {
 
       {/* ── Notification Banner (Error / Warning) ── */}
       {state.error && (
-        <div className="bg-rose-950/70 border-b border-rose-800/80 px-6 py-2.5 text-xs font-medium text-rose-300 flex items-center justify-between">
+        <div className="bg-[#F43F5E]/15 border-b border-[#F43F5E]/30 px-6 py-2.5 text-xs font-medium text-[#F43F5E] flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span>⚠️</span>
             <span>{state.error}</span>
           </div>
-          <button onClick={() => dispatch({ type: "SET_ERROR", payload: "" })} className="text-rose-400 hover:text-rose-200">
+          <button onClick={() => dispatch({ type: "SET_ERROR", payload: "" })} className="text-[#F43F5E] hover:underline">
             Dismiss
           </button>
         </div>
@@ -338,17 +338,17 @@ export default function Home() {
       <main className="grid grid-cols-1 lg:grid-cols-[1fr_420px] min-h-[calc(100vh-61px)]">
 
         {/* ── Left Pane: Roadmap & Readiness ── */}
-        <div className="p-8 border-r border-neutral-800/70 space-y-7 overflow-y-auto">
+        <div className="p-8 border-r border-white/[0.08] space-y-7 overflow-y-auto">
 
           {/* Readiness & Gap Hero Box */}
-          <div className="bg-[#111116] border border-neutral-800 rounded-2xl p-6 shadow-sm flex flex-col sm:flex-row items-center gap-6">
+          <div className="card-surface rounded-2xl p-6 shadow-sm flex flex-col sm:flex-row items-center gap-6">
             {/* SVG Ring */}
             <div className="relative shrink-0">
               <svg width="96" height="96" viewBox="0 0 96 96" className="rotate-[-90deg]">
-                <circle cx="48" cy="48" r={r} fill="none" stroke="#26262b" strokeWidth="8" />
+                <circle cx="48" cy="48" r={r} fill="none" stroke="#151923" strokeWidth="8" />
                 <circle
                   cx="48" cy="48" r={r} fill="none"
-                  stroke={readiness > 0.6 ? "#10b981" : readiness > 0.3 ? "#6366f1" : "#f43f5e"}
+                  stroke={readiness > 0.6 ? "#10B981" : readiness > 0.3 ? "#06B6D4" : "#F43F5E"}
                   strokeWidth="8"
                   strokeDasharray={`${arc} ${circ - arc}`}
                   strokeLinecap="round"
@@ -356,29 +356,29 @@ export default function Home() {
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <span className="text-lg font-black tracking-tight text-white font-mono">
+                <span className="text-lg font-black tracking-tight text-[#F8FAFC] font-mono tabular-nums">
                   {(readiness * 100).toFixed(0)}%
                 </span>
-                <span className="text-[9px] uppercase tracking-wider text-neutral-400 font-semibold">Match</span>
+                <span className="text-[9px] uppercase tracking-wider text-[#94A3B8] font-semibold">Match</span>
               </div>
             </div>
 
             <div className="space-y-2 flex-1 text-center sm:text-left">
               <div className="flex items-center justify-center sm:justify-start gap-2">
-                <h2 className="text-base font-bold text-white tracking-tight">
+                <h2 className="text-base font-bold text-[#F8FAFC] tracking-tight">
                   {state.learner.name}&apos;s Skill Baseline
                 </h2>
-                <span className="text-[11px] bg-indigo-950/80 border border-indigo-700/60 text-indigo-300 font-mono px-2 py-0.5 rounded">
+                <span className="text-[11px] bg-[#6366F1]/15 border border-[#6366F1]/30 text-[#6366F1] font-mono px-2 py-0.5 rounded font-semibold">
                   {ROLES.find(r => r.id === state.learner.targetRoleId)?.title}
                 </span>
               </div>
-              <p className="text-xs text-neutral-400 leading-relaxed max-w-xl">
+              <p className="text-xs text-[#94A3B8] leading-relaxed max-w-xl">
                 {state.gap?.summary ?? "Click Generate Plan to execute DAG gap evaluation and multi-agent synthesis."}
               </p>
               <div className="pt-1">
                 <button
                   onClick={() => setShowProfileModal(true)}
-                  className="text-[11px] font-mono text-indigo-400 hover:text-indigo-300 underline cursor-pointer"
+                  className="text-[11px] font-mono text-[#06B6D4] hover:underline cursor-pointer"
                 >
                   Edit Baseline Skills & Commitment →
                 </button>
@@ -388,12 +388,12 @@ export default function Home() {
 
           {/* Skill Pills (Gaps vs Strengths) */}
           {state.gap && (
-            <div className="space-y-3 bg-[#111116]/80 border border-neutral-800/80 rounded-2xl p-5">
+            <div className="space-y-3 card-surface rounded-2xl p-5">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-mono text-neutral-400 uppercase tracking-wider block">
+                <span className="text-[11px] font-mono text-[#94A3B8] uppercase tracking-wider block">
                   Skill Deficiency & Coverage Matrix
                 </span>
-                <span className="text-[11px] text-neutral-500 font-mono">
+                <span className="text-[11px] text-[#94A3B8] font-mono tabular-nums">
                   {state.gap.missing.length} Gaps · {state.gap.strengths.length} Met
                 </span>
               </div>
@@ -402,21 +402,21 @@ export default function Home() {
                 {state.gap.missing.map(g => (
                   <span
                     key={g.skillId}
-                    className="text-xs bg-rose-950/40 text-rose-300 border border-rose-800/60 rounded-lg px-2.5 py-1 font-mono flex items-center gap-1.5"
+                    className="text-xs bg-[#F43F5E]/10 text-[#F43F5E] border border-[#F43F5E]/30 rounded-lg px-2.5 py-1 font-mono tabular-nums flex items-center gap-1.5"
                   >
-                    <span className="text-rose-400">×</span>
+                    <span>×</span>
                     <span>{g.skillId}</span>
-                    <span className="text-[10px] text-rose-400/80">({g.current}→{g.required})</span>
+                    <span className="text-[10px] opacity-80">({g.current}→{g.required})</span>
                   </span>
                 ))}
                 {state.gap.strengths.map(g => (
                   <span
                     key={g.skillId}
-                    className="text-xs bg-emerald-950/40 text-emerald-300 border border-emerald-800/60 rounded-lg px-2.5 py-1 font-mono flex items-center gap-1.5"
+                    className="text-xs bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/30 rounded-lg px-2.5 py-1 font-mono tabular-nums flex items-center gap-1.5"
                   >
-                    <span className="text-emerald-400">✓</span>
+                    <span>✓</span>
                     <span>{g.skillId}</span>
-                    <span className="text-[10px] text-emerald-400/80">(Met)</span>
+                    <span className="text-[10px] opacity-80">(Met)</span>
                   </span>
                 ))}
               </div>
@@ -428,7 +428,7 @@ export default function Home() {
             <button
               onClick={() => handleGenerate()}
               disabled={state.loading}
-              className="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white text-xs font-semibold px-5 py-2.5 rounded-xl shadow-md shadow-indigo-600/25 transition-all flex items-center gap-2 active:scale-95 cursor-pointer"
+              className="btn-indigo-glow disabled:opacity-50 text-xs font-semibold px-5 py-2.5 rounded-xl transition-all flex items-center gap-2 active:scale-95 cursor-pointer"
             >
               {state.loading && <span className="w-3.5 h-3.5 border-2 border-white/20 border-t-white rounded-full animate-spin"></span>}
               {state.loading ? "Synthesizing Plan..." : state.plan ? "Re-generate Plan" : "Generate Plan"}
@@ -436,7 +436,7 @@ export default function Home() {
 
             <button
               onClick={() => setShowProfileModal(true)}
-              className="bg-neutral-900 hover:bg-neutral-800 text-neutral-300 text-xs font-medium px-4 py-2.5 rounded-xl border border-neutral-800 transition-all cursor-pointer"
+              className="bg-[#0E1117] hover:bg-[#151923] text-[#F8FAFC] text-xs font-medium px-4 py-2.5 rounded-xl border border-white/10 hover:border-white/20 transition-all cursor-pointer"
             >
               Upload Resume / Custom Profile
             </button>
@@ -446,14 +446,14 @@ export default function Home() {
                 <button
                   onClick={handleSimulateQuizFail}
                   disabled={state.loading}
-                  className="bg-neutral-900 hover:bg-neutral-800 disabled:opacity-50 text-neutral-300 text-xs font-medium px-4 py-2.5 rounded-xl border border-neutral-800 transition-all active:scale-95 cursor-pointer"
+                  className="bg-[#0E1117] hover:bg-[#151923] disabled:opacity-50 text-[#F59E0B] text-xs font-medium px-4 py-2.5 rounded-xl border border-[#F59E0B]/30 hover:border-[#F59E0B]/60 transition-all active:scale-95 cursor-pointer shadow-sm shadow-[#F59E0B]/10"
                 >
                   ⚡ Simulate Quiz Failure
                 </button>
                 <button
                   onClick={() => setShowQuiz(true)}
                   disabled={state.loading}
-                  className="bg-neutral-900 hover:bg-neutral-800 disabled:opacity-50 text-neutral-300 text-xs font-medium px-4 py-2.5 rounded-xl border border-neutral-800 transition-all active:scale-95 cursor-pointer"
+                  className="bg-[#0E1117] hover:bg-[#151923] disabled:opacity-50 text-[#06B6D4] text-xs font-medium px-4 py-2.5 rounded-xl border border-[#06B6D4]/30 hover:border-[#06B6D4]/60 transition-all active:scale-95 cursor-pointer shadow-sm shadow-[#06B6D4]/10"
                 >
                   📝 Take Live Assessment
                 </button>
@@ -463,11 +463,11 @@ export default function Home() {
 
           {/* Mentor Directive Banner */}
           {state.mentorMessage && (
-            <div className="bg-gradient-to-r from-indigo-950/60 via-purple-950/40 to-neutral-900 border border-indigo-700/60 rounded-xl p-4 shadow-sm space-y-1">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-indigo-400 font-semibold block">
+            <div className="bg-gradient-to-r from-[#6366F1]/15 via-[#0E1117] to-[#0E1117] border border-[#6366F1]/30 rounded-xl p-4 shadow-sm space-y-1">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-[#06B6D4] font-semibold block">
                 Adaptive Mentor Directive
               </span>
-              <p className="text-xs text-indigo-200 leading-relaxed">
+              <p className="text-xs text-[#F8FAFC] leading-relaxed">
                 {state.mentorMessage}
               </p>
             </div>
@@ -475,16 +475,16 @@ export default function Home() {
 
           {/* Diff Summary Badges */}
           {state.diff && (
-            <div className="flex items-center gap-3 bg-[#111116] border border-neutral-800 p-3.5 rounded-xl text-xs flex-wrap">
-              <span className="text-[11px] font-mono text-neutral-400">Plan Adaptation Delta:</span>
-              <span className="bg-emerald-950/60 text-emerald-300 border border-emerald-800/80 px-2.5 py-0.5 rounded font-mono font-medium">
+            <div className="flex items-center gap-3 card-surface p-3.5 rounded-xl text-xs flex-wrap font-mono tabular-nums">
+              <span className="text-[11px] text-[#94A3B8]">Plan Adaptation Delta:</span>
+              <span className="bg-[#10B981]/15 text-[#10B981] border border-[#10B981]/30 px-2.5 py-0.5 rounded font-medium">
                 +{state.diff.addedHours}h added
               </span>
-              <span className="bg-neutral-800 text-neutral-200 border border-neutral-700 px-2.5 py-0.5 rounded font-mono font-medium">
+              <span className="bg-white/[0.06] text-[#F8FAFC] border border-white/10 px-2.5 py-0.5 rounded font-medium">
                 {state.diff.keptHours}h preserved ({(state.diff.preservedPct * 100).toFixed(0)}%)
               </span>
               {state.diff.removedHours > 0 && (
-                <span className="bg-rose-950/60 text-rose-300 border border-rose-800/80 px-2.5 py-0.5 rounded font-mono font-medium">
+                <span className="bg-[#F43F5E]/15 text-[#F43F5E] border border-[#F43F5E]/30 px-2.5 py-0.5 rounded font-medium">
                   -{state.diff.removedHours}h trimmed
                 </span>
               )}
@@ -493,12 +493,12 @@ export default function Home() {
 
           {/* Roadmap Module View */}
           <div className="space-y-4">
-            <div className="flex items-center justify-between border-b border-neutral-800 pb-2">
-              <h3 className="text-xs font-mono uppercase tracking-wider text-neutral-400 font-semibold">
+            <div className="flex items-center justify-between border-b border-white/[0.08] pb-2">
+              <h3 className="text-xs font-mono uppercase tracking-wider text-[#94A3B8] font-semibold">
                 Curriculum Schedule & Capacity
               </h3>
               {state.plan && (
-                <span className="text-xs font-mono text-neutral-500">
+                <span className="text-xs font-mono tabular-nums text-[#94A3B8]">
                   {state.plan.totalHours}h Total · {state.plan.numberOfWeeks} Weeks · v{state.plan.version}
                 </span>
               )}
@@ -513,15 +513,15 @@ export default function Home() {
         </div>
 
         {/* ── Right Pane: Real-time Multi-Agent Trace Console ── */}
-        <div className="bg-[#0b0b0e] p-6 overflow-y-auto space-y-4 border-l border-neutral-800/70">
-          <div className="flex items-center justify-between border-b border-neutral-800 pb-3">
+        <div className="bg-[#07080C] p-6 overflow-y-auto space-y-4 border-l border-white/[0.08]">
+          <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
             <div>
-              <h3 className="text-xs font-mono uppercase tracking-wider text-neutral-200 font-bold">
+              <h3 className="text-xs font-mono uppercase tracking-wider text-[#F8FAFC] font-bold">
                 Agent Coordination Telemetry
               </h3>
-              <p className="text-[11px] text-neutral-500">Real-time decision contracts & invariant validation</p>
+              <p className="text-[11px] text-[#94A3B8]">Real-time decision contracts & invariant validation</p>
             </div>
-            <span className="text-[11px] font-mono bg-neutral-900 border border-neutral-800 px-2.5 py-0.5 rounded text-neutral-400">
+            <span className="text-[11px] font-mono tabular-nums bg-[#0E1117] border border-white/10 px-2.5 py-0.5 rounded text-[#06B6D4]">
               {state.trace.length} Envelopes
             </span>
           </div>
