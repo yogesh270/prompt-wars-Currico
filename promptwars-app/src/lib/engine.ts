@@ -293,10 +293,18 @@ export function validatePlan(
 // ─── compressPlan (Strict Enforcement & Redistribution) ───────────────────────
 
 export function compressPlan(plan: Plan, budget: number): Plan {
-  // 1. Gather all unique course representations from the plan
+  // 1. Separate remedial/adaptive modules from regular course modules
+  const remedialMods: Module[] = [];
   const courseMap = new Map<string, { mod: Module; baseHours: number }>();
+
   for (const m of plan.modules) {
-    if (!courseMap.has(m.courseId)) {
+    if (m.isRemedial || m.id.includes(":remedial") || m.title.includes("[Remediation]") || m.diff === "added") {
+      remedialMods.push({
+        ...m,
+        isRemedial: true,
+        diff: "added",
+      });
+    } else if (!courseMap.has(m.courseId)) {
       const originalCourse = COURSES.find(c => c.id === m.courseId);
       courseMap.set(m.courseId, {
         mod: m,
@@ -305,7 +313,7 @@ export function compressPlan(plan: Plan, budget: number): Plan {
     }
   }
 
-  // 2. Re-chunk courses so each chunk is strictly <= budget
+  // 2. Re-chunk regular courses so each chunk is strictly <= budget
   const chunkedModules: Omit<Module, "week">[] = [];
   for (const { mod, baseHours } of Array.from(courseMap.values())) {
     const unchunkedBase = {
@@ -320,16 +328,32 @@ export function compressPlan(plan: Plan, budget: number): Plan {
     chunkedModules.push(...chunkModule(unchunkedBase, budget));
   }
 
-  // 3. Topologically sort the chunks respecting skill prerequisites and Part order
+  // 3. Topologically sort regular chunks respecting skill prerequisites and Part order
   const topoOrder = topoSort(chunkedModules);
 
-  // 4. Distribute chunks across weeks strictly ensuring NO week exceeds budget
+  // 4. Distribute remedial modules at the top (Week 1), followed by regular chunks,
+  // strictly ensuring NO week exceeds budget
   const repacked: Module[] = [];
   let currentWeek = 1;
   let weekHours = 0;
 
+  // Schedule remedial modules first
+  for (const rMod of remedialMods) {
+    const rChunkHours = Math.min(rMod.hours, budget);
+    if (weekHours + rChunkHours > budget && weekHours > 0) {
+      currentWeek++;
+      weekHours = 0;
+    }
+    repacked.push({
+      ...rMod,
+      hours: rChunkHours,
+      week: currentWeek,
+    });
+    weekHours += rChunkHours;
+  }
+
+  // Schedule remaining course chunks
   for (const mod of topoOrder) {
-    // If adding this chunk would exceed the weekly commitment, step to next week
     if (weekHours + mod.hours > budget && weekHours > 0) {
       currentWeek++;
       weekHours = 0;
@@ -436,20 +460,29 @@ export function insertRemediationModules(
   const result = [...modules];
 
   for (const skillId of weakSkillIds) {
-    // Find a remediation course covering this skill not already in plan
-    const course = COURSES.find(c => c.skills.includes(skillId) && !existing.has(c.id));
+    // 1. Try to find a course covering this skill not already in plan
+    let course = COURSES.find(c => c.skills.includes(skillId) && !existing.has(c.id));
+    if (!course) {
+      // 2. If all courses covering this skill are in the plan, reuse primary course
+      course = COURSES.find(c => c.skills.includes(skillId));
+    }
     if (!course) continue;
+
+    const remedialId = `${skillId}:${course.id}:remedial`;
+    if (result.some(m => m.id === remedialId)) continue;
     existing.add(course.id);
-    result.push({
-      id:        `${skillId}:${course.id}:remedial`,
+
+    result.unshift({
+      id:        remedialId,
       skillId,
       courseId:  course.id,
-      title:     `[Remediation] ${course.title}`,
+      title:     `[Remediation] ${course.title} — Deep Dive`,
       week:      atWeek,
-      hours:     Math.min(course.hours, 3), // cap remediation chunk at 3h
-      rationale: `Targeted remediation module inserted for "${skillId}".`,
+      hours:     Math.min(course.hours, 2.5), // targeted 2.5h remedial injection
+      rationale: `Targeted adaptive remediation inserted for "${skillId}" following diagnostic deficiency.`,
       status:    "todo",
       diff:      "added",
+      isRemedial: true,
     });
   }
 

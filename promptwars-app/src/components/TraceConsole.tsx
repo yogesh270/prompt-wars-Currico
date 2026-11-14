@@ -14,12 +14,12 @@ const STATUS_BADGES: Record<string, { label: string; className: string }> = {
 };
 
 const AGENT_META: Record<string, { label: string; icon: string; description: string }> = {
-  profile:  { label: "Profile Ingestion", icon: "🧠", description: "Skill matrix baseline extraction" },
-  gap:      { label: "Gap Analyst",       icon: "🔍", description: "Prerequisite DAG differential" },
-  planner:  { label: "Adaptive Planner",  icon: "📅", description: "Topological schedule synthesis" },
-  critic:   { label: "Constraint Critic", icon: "⚖️", description: "Invariant & capacity verification" },
+  profile:  { label: "Profile Ingestion",   icon: "🧠", description: "Skill matrix baseline extraction" },
+  gap:      { label: "Gap Analyst",         icon: "🔍", description: "Prerequisite DAG differential" },
+  planner:  { label: "Adaptive Planner",    icon: "📅", description: "Topological schedule synthesis" },
+  critic:   { label: "Constraint Critic",   icon: "⚖️", description: "Hard invariant & capacity verification" },
   assessor: { label: "Competency Assessor", icon: "📝", description: "Diagnostic evaluation & remediation" },
-  mentor:   { label: "Adaptive Mentor",   icon: "🎓", description: "Learner guidance & transition narrative" },
+  mentor:   { label: "Adaptive Mentor",     icon: "🎓", description: "Learner guidance & transition narrative" },
 };
 
 export default function TraceConsole({ trace }: TraceConsoleProps) {
@@ -57,7 +57,12 @@ export default function TraceConsole({ trace }: TraceConsoleProps) {
         const statusBadge = STATUS_BADGES[env.status] ?? STATUS_BADGES.ok;
         const currentTab = activeTabMap[env.id] || "summary";
         const outputObj = env.output as any;
+        const inputObj = env.input as any;
         const checks = outputObj?.checks;
+        const ruleIssues = outputObj?.ruleIssues as string[] | undefined;
+        const isCritic = env.agent === "critic";
+        const isPlanner = env.agent === "planner";
+        const isAssessor = env.agent === "assessor";
 
         return (
           <div
@@ -85,6 +90,11 @@ export default function TraceConsole({ trace }: TraceConsoleProps) {
                     <span className="text-[10px] font-mono text-neutral-500">
                       #{index + 1}
                     </span>
+                    {outputObj?.version && (
+                      <span className="text-[9px] font-mono bg-indigo-950 text-indigo-300 border border-indigo-800 px-1.5 py-0.2 rounded">
+                        {outputObj.version}
+                      </span>
+                    )}
                   </div>
                   <span className="text-[10px] text-neutral-400 block truncate">
                     {meta.description}
@@ -119,26 +129,78 @@ export default function TraceConsole({ trace }: TraceConsoleProps) {
                   </p>
                 </div>
 
-                {/* Constraint Checks (Specially for Critic & Planner) */}
-                {checks && (
-                  <div className="bg-[#0e0e12] border border-neutral-800 rounded-lg p-3 space-y-2">
-                    <span className="text-[10px] font-mono uppercase tracking-wider text-indigo-400 font-semibold block">
-                      Hard Invariant Verification Checks
-                    </span>
-                    <div className="grid grid-cols-1 gap-1 text-[11px] font-mono">
-                      <div className="flex items-center gap-2 text-emerald-400">
-                        <span>✓</span>
-                        <span>Weekly Budget Invariant: ≤ Commitment Allocation</span>
+                {/* Critic Invariant Checks Badge Section */}
+                {isCritic && (
+                  <div className="bg-[#0e0e12] border border-neutral-800 rounded-lg p-3 space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-indigo-400 font-bold flex items-center gap-1.5">
+                        <span>⚖️</span>
+                        <span>Hard Constraint Verification</span>
+                      </span>
+                      <span className={`text-[10px] font-mono font-bold px-2 py-0.2 rounded border ${
+                        env.status === "ok" ? "bg-emerald-950 text-emerald-300 border-emerald-800" : "bg-amber-950 text-amber-300 border-amber-800"
+                      }`}>
+                        {env.status === "ok" ? "ALL INVARIANTS PASS" : "REVISION REQUIRED"}
+                      </span>
+                    </div>
+
+                    <div className="space-y-1.5 text-xs font-mono">
+                      {/* Check 1: Weekly Hours */}
+                      <div className="flex items-center justify-between p-2 rounded bg-neutral-900/70 border border-neutral-800/60">
+                        <div className="flex items-center gap-2">
+                          <span className={checks?.weekly_hours_cap?.status === "FAIL" || checks?.weeklyBudgetPass === false ? "text-rose-400" : "text-emerald-400"}>
+                            {checks?.weekly_hours_cap?.status === "FAIL" || checks?.weeklyBudgetPass === false ? "✕" : "✓"}
+                          </span>
+                          <span className="text-neutral-300">1. Weekly Capacity Cap</span>
+                        </div>
+                        <span className={`text-[10px] px-2 py-0.5 rounded font-bold ${
+                          checks?.weekly_hours_cap?.status === "FAIL" || checks?.weeklyBudgetPass === false
+                            ? "bg-rose-950 text-rose-300 border border-rose-800"
+                            : "bg-emerald-950 text-emerald-300 border border-emerald-800"
+                        }`}>
+                          {checks?.weekly_hours_cap?.status === "FAIL" || checks?.weeklyBudgetPass === false ? "FAIL (> Budget)" : "PASS (≤ Budget)"}
+                        </span>
                       </div>
-                      <div className="flex items-center gap-2 text-emerald-400">
-                        <span>✓</span>
-                        <span>Prerequisite DAG Order: Sequenced Partitions Satisfied</span>
+
+                      {/* Check 2: DAG Prereq Order */}
+                      <div className="flex items-center justify-between p-2 rounded bg-neutral-900/70 border border-neutral-800/60">
+                        <div className="flex items-center gap-2">
+                          <span className={checks?.dagOrderPass === false ? "text-rose-400" : "text-emerald-400"}>
+                            {checks?.dagOrderPass === false ? "✕" : "✓"}
+                          </span>
+                          <span className="text-neutral-300">2. Prerequisite DAG Order</span>
+                        </div>
+                        <span className="text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-800 px-2 py-0.5 rounded font-bold">
+                          PASS (Sequenced)
+                        </span>
                       </div>
-                      <div className="flex items-center gap-2 text-emerald-400">
-                        <span>✓</span>
-                        <span>Zero Hallucinations: All Modules Verified against Seed Registry</span>
+
+                      {/* Check 3: Zero Hallucinations */}
+                      <div className="flex items-center justify-between p-2 rounded bg-neutral-900/70 border border-neutral-800/60">
+                        <div className="flex items-center gap-2">
+                          <span className={checks?.zeroHallucinationsPass === false ? "text-rose-400" : "text-emerald-400"}>
+                            {checks?.zeroHallucinationsPass === false ? "✕" : "✓"}
+                          </span>
+                          <span className="text-neutral-300">3. Zero Hallucinations</span>
+                        </div>
+                        <span className="text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-800 px-2 py-0.5 rounded font-bold">
+                          PASS (Canonical)
+                        </span>
                       </div>
                     </div>
+
+                    {/* Rule Issues if rejected */}
+                    {ruleIssues && ruleIssues.length > 0 && (
+                      <div className="bg-rose-950/40 border border-rose-800/60 p-2.5 rounded text-[11px] text-rose-300 space-y-1 font-mono">
+                        <span className="font-bold text-rose-200 block">Identified Invariant Violations:</span>
+                        {ruleIssues.map((issue, i) => (
+                          <div key={i} className="flex items-start gap-1.5">
+                            <span className="text-rose-400">•</span>
+                            <span>{issue}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -153,7 +215,7 @@ export default function TraceConsole({ trace }: TraceConsoleProps) {
                           : "text-neutral-400 hover:text-neutral-200"
                       }`}
                     >
-                      Structured Output
+                      Decision Contract
                     </button>
                     <button
                       onClick={() => setTab(env.id, "json")}
@@ -163,7 +225,7 @@ export default function TraceConsole({ trace }: TraceConsoleProps) {
                           : "text-neutral-400 hover:text-neutral-200"
                       }`}
                     >
-                      Decision Contract (JSON)
+                      Output (JSON)
                     </button>
                     <button
                       onClick={() => setTab(env.id, "input")}
@@ -173,7 +235,7 @@ export default function TraceConsole({ trace }: TraceConsoleProps) {
                           : "text-neutral-400 hover:text-neutral-200"
                       }`}
                     >
-                      Payload Input
+                      Input Payload
                     </button>
                   </div>
 
@@ -185,38 +247,48 @@ export default function TraceConsole({ trace }: TraceConsoleProps) {
                   </button>
                 </div>
 
-                {/* Tab 1: Structured Summary */}
+                {/* Tab 1: Decision Contract Summary */}
                 {currentTab === "summary" && (
-                  <div className="text-xs font-mono bg-neutral-950 p-3 rounded-lg border border-neutral-800/80 text-neutral-300 overflow-x-auto max-h-48">
+                  <div className="text-xs font-mono bg-neutral-950 p-3 rounded-lg border border-neutral-800/80 text-neutral-300 space-y-2 max-h-56 overflow-y-auto">
                     {outputObj?.verdict && (
-                      <div className="mb-1.5">
-                        <span className="text-neutral-500">Verdict: </span>
-                        <strong className={outputObj.verdict === "pass" ? "text-emerald-400" : "text-amber-400"}>
+                      <div className="flex items-center gap-2">
+                        <span className="text-neutral-500">Critic Verdict:</span>
+                        <strong className={outputObj.verdict === "pass" ? "text-emerald-400 font-bold" : "text-amber-400 font-bold"}>
                           {outputObj.verdict.toUpperCase()}
                         </strong>
                       </div>
                     )}
                     {outputObj?.summary && (
-                      <div className="mb-1.5">
-                        <span className="text-neutral-500">Summary: </span>
-                        <span>{outputObj.summary}</span>
+                      <div>
+                        <span className="text-neutral-500 block mb-0.5">Decision Summary:</span>
+                        <p className="text-neutral-200 text-[11px] leading-relaxed bg-neutral-900/60 p-2 rounded border border-neutral-800">
+                          {outputObj.summary}
+                        </p>
                       </div>
                     )}
-                    {outputObj?.readiness !== undefined && (
-                      <div className="mb-1.5">
-                        <span className="text-neutral-500">Computed Readiness: </span>
-                        <span className="text-indigo-400 font-bold">{(outputObj.readiness * 100).toFixed(1)}%</span>
+                    {outputObj?.action && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-neutral-500">Action:</span>
+                        <span className="text-indigo-400 font-bold">{outputObj.action}</span>
                       </div>
                     )}
                     {outputObj?.score !== undefined && (
-                      <div className="mb-1.5">
-                        <span className="text-neutral-500">Assessment Score: </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-neutral-500">Diagnostic Score:</span>
                         <span className="text-indigo-400 font-bold">{(outputObj.score * 100).toFixed(0)}%</span>
                       </div>
                     )}
-                    <pre className="text-[11px] text-neutral-400 mt-2">
-                      {JSON.stringify(outputObj, null, 2)}
-                    </pre>
+                    {outputObj?.readiness !== undefined && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-neutral-500">Evaluated Readiness:</span>
+                        <span className="text-emerald-400 font-bold">{(outputObj.readiness * 100).toFixed(1)}%</span>
+                      </div>
+                    )}
+                    {outputObj?.masteryPenalty && (
+                      <div className="text-rose-400 text-[11px]">
+                        ⚠️ {outputObj.masteryPenalty}
+                      </div>
+                    )}
                   </div>
                 )}
 

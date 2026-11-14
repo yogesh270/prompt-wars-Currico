@@ -1,0 +1,11 @@
+{
+  "name": "currico",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Currico - Full-stack adaptive learning platform",
+  "scripts": {
+    "dev": "npm run dev --prefix promptwars-app",
+    "build": "npm run build --prefix promptwars-app",
+    "start": "npm run start --prefix promptwars-app"
+  }
+}

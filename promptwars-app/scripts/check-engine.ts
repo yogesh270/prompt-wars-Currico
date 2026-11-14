@@ -116,18 +116,19 @@ for (const q of fsQuestions) {
 const failResult = gradeQuiz("full-stack", allWrong);
 console.log(`   all-wrong score: ${(failResult.score * 100).toFixed(0)}%, passed: ${failResult.passed}`);
 assert(!failResult.passed, "all-wrong → passed=false");
-assert(failResult.weakSkillIds.length === 3, "all-wrong → 3 weakSkillIds");
+assert(failResult.weakSkillIds.length === fsQuestions.length, `all-wrong → ${fsQuestions.length} weakSkillIds`);
 
-// Two correct
-const twoCorrect: Record<string, string> = {};
+// High passing score (4 of 5 correct)
+const highPassAnswers: Record<string, string> = {};
+const correctCount = Math.max(fsQuestions.length - 1, 1);
 for (let i = 0; i < fsQuestions.length; i++) {
   const q = fsQuestions[i];
-  twoCorrect[q.questionId] = i < 2 ? q.answerKey : (q.options.find(o => o !== q.answerKey) ?? q.options[0]);
+  highPassAnswers[q.questionId] = i < correctCount ? q.answerKey : (q.options.find(o => o !== q.answerKey) ?? q.options[0]);
 }
-const passResult = gradeQuiz("full-stack", twoCorrect);
-console.log(`   two-correct score: ${(passResult.score * 100).toFixed(0)}%, passed: ${passResult.passed}`);
-assert(passResult.passed, "two-correct → passed=true");
-assert(passResult.weakSkillIds.length === 1, "two-correct → 1 weakSkillId");
+const passResult = gradeQuiz("full-stack", highPassAnswers);
+console.log(`   high-pass score: ${(passResult.score * 100).toFixed(0)}%, passed: ${passResult.passed}`);
+assert(passResult.passed, "high-pass → passed=true");
+assert(passResult.weakSkillIds.length === (fsQuestions.length - correctCount), `high-pass → ${fsQuestions.length - correctCount} weakSkillId`);
 
 // Missing answers treated as wrong
 const missingResult = gradeQuiz("full-stack", {});

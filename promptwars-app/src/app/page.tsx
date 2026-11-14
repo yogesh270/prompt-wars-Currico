@@ -5,15 +5,16 @@ import type {
   Learner, PlanResponse, AdaptResponse, RoleId
 } from "@/lib/types";
 import { ROLES, PRIYA_PERSONA, QUIZ_QUESTIONS } from "@/lib/seed";
+import { computeGap } from "@/lib/engine";
 import { appReducer, initialState, persistRun, loadLatestRun, clearRuns } from "@/lib/store";
 import { isSupabaseConfigured, saveLearnerToSupabase, savePlanToSupabase } from "@/lib/supabase";
 import Roadmap from "@/components/Roadmap";
 import TraceConsole from "@/components/TraceConsole";
 import LearnerProfileModal from "@/components/LearnerProfileModal";
+import DiagnosticQuizModal from "@/components/DiagnosticQuizModal";
 
 export default function Home() {
   const [state, dispatch] = useReducer(appReducer, initialState);
-  const [quizAnswers, setQuizAnswers] = useState<Record<string, string>>({});
   const [showQuiz, setShowQuiz] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
 
@@ -103,7 +104,19 @@ export default function Home() {
       });
       if (!res.ok) throw new Error(`Adapt returned status ${res.status}`);
       const data: AdaptResponse = await res.json();
-      dispatch({ type: "SET_ADAPT_RESPONSE", payload: data });
+
+      const role = ROLES.find(r => r.id === state.learner.targetRoleId);
+      if (data.updatedLearner && role) {
+        const updatedGap = computeGap(data.updatedLearner, role);
+        dispatch({
+          type: "SET_PLAN_RESPONSE",
+          payload: { plan: data.plan, gap: updatedGap, trace: data.trace },
+        });
+        dispatch({ type: "SET_ADAPT_RESPONSE", payload: data });
+        dispatch({ type: "SET_LEARNER", payload: data.updatedLearner });
+      } else {
+        dispatch({ type: "SET_ADAPT_RESPONSE", payload: data });
+      }
     } catch (err) {
       console.error("Quiz Adapt Error:", err);
       dispatch({ type: "SET_ERROR", payload: err instanceof Error ? err.message : "Adaptation failed" });
@@ -112,40 +125,19 @@ export default function Home() {
     }
   }
 
-  async function handleQuizSubmit() {
-    if (!state.plan) return;
-    setShowQuiz(false);
-
-    if (state.mode === "replay") {
-      try {
-        const { replayCache } = await import("@/data/replay");
-        dispatch({ type: "SET_ADAPT_RESPONSE", payload: replayCache.afterQuizFail });
-      } catch {
-        dispatch({ type: "SET_ERROR", payload: "Replay data not yet loaded." });
+  function handleAssessmentComplete(updatedLearner: Learner, scorePct: number) {
+    const role = ROLES.find(r => r.id === updatedLearner.targetRoleId);
+    if (role) {
+      const updatedGap = computeGap(updatedLearner, role);
+      dispatch({ type: "SET_LEARNER", payload: updatedLearner });
+      if (state.plan) {
+        dispatch({
+          type: "SET_PLAN_RESPONSE",
+          payload: { plan: state.plan, gap: updatedGap, trace: state.trace },
+        });
       }
-      return;
     }
-
-    dispatch({ type: "SET_LOADING", payload: true });
-    try {
-      const res = await fetch("/api/adapt", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          learner: state.learner,
-          currentPlan: state.plan,
-          event: { type: "QUIZ_FAILED", answers: quizAnswers },
-        }),
-      });
-      if (!res.ok) throw new Error(`Adapt returned status ${res.status}`);
-      const data: AdaptResponse = await res.json();
-      dispatch({ type: "SET_ADAPT_RESPONSE", payload: data });
-    } catch (err) {
-      console.error("Quiz Submit Error:", err);
-      dispatch({ type: "SET_ERROR", payload: err instanceof Error ? err.message : "Quiz evaluation failed" });
-    } finally {
-      dispatch({ type: "SET_LOADING", payload: false });
-    }
+    handleGenerate(updatedLearner);
   }
 
   async function handleRoleChange(newRoleId: RoleId) {
@@ -207,7 +199,6 @@ export default function Home() {
   const r = 36;
   const circ = 2 * Math.PI * r;
   const arc = circ * readiness;
-  const quizQuestions = QUIZ_QUESTIONS.filter(q => q.roleId === state.learner.targetRoleId);
 
   if (!state.mounted) {
     return (
@@ -299,13 +290,13 @@ export default function Home() {
         {/* Right Action Controls */}
         <div className="flex items-center gap-3">
           {/* Supabase Status Pill */}
-          <span className={`text-[10px] font-mono px-2 py-1 rounded border flex items-center gap-1.5 ${
+          <span className={`text-[10px] font-mono px-2.5 py-1 rounded-md border flex items-center gap-1.5 ${
             isSupabaseConfigured
               ? "bg-emerald-950/80 text-emerald-300 border-emerald-800"
-              : "bg-neutral-900 text-neutral-400 border-neutral-800"
+              : "bg-amber-950/70 text-amber-300 border-amber-800/80"
           }`}>
-            <span className={`w-1.5 h-1.5 rounded-full ${isSupabaseConfigured ? "bg-emerald-400" : "bg-neutral-500"}`}></span>
-            {isSupabaseConfigured ? "Supabase Active" : "Local Store"}
+            <span className={`w-1.5 h-1.5 rounded-full ${isSupabaseConfigured ? "bg-emerald-400" : "bg-amber-400"}`}></span>
+            {isSupabaseConfigured ? "DB: SUPABASE LIVE" : "DB: LOCAL FALLBACK"}
           </span>
 
           {/* Live / Replay Toggle */}
@@ -547,69 +538,13 @@ export default function Home() {
         onSave={handleSaveCustomProfile}
       />
 
-      {/* ── Assessment Quiz Modal ── */}
-      {showQuiz && (
-        <div className="fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#101014] border border-neutral-800 rounded-2xl p-6 max-w-lg w-full space-y-5 shadow-2xl">
-            <div className="border-b border-neutral-800 pb-3 flex items-center justify-between">
-              <div>
-                <h3 className="text-base font-bold text-white">Live Diagnostic Assessment</h3>
-                <p className="text-xs text-neutral-400">
-                  Testing baseline knowledge for {ROLES.find(r => r.id === state.learner.targetRoleId)?.title}
-                </p>
-              </div>
-              <button
-                onClick={() => setShowQuiz(false)}
-                className="text-neutral-400 hover:text-white text-lg font-mono leading-none"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
-              {quizQuestions.map(q => (
-                <div key={q.questionId} className="bg-neutral-950/70 border border-neutral-800/80 p-4 rounded-xl space-y-2.5">
-                  <p className="text-xs font-semibold text-neutral-200">{q.question}</p>
-                  <div className="space-y-1.5">
-                    {q.options.map(opt => (
-                      <label
-                        key={opt}
-                        className="flex items-center gap-2.5 text-xs text-neutral-300 p-2 rounded-lg hover:bg-neutral-800/50 cursor-pointer border border-transparent hover:border-neutral-700/50 transition-colors"
-                      >
-                        <input
-                          type="radio"
-                          name={q.questionId}
-                          value={opt}
-                          checked={quizAnswers[q.questionId] === opt}
-                          onChange={() => setQuizAnswers(prev => ({ ...prev, [q.questionId]: opt }))}
-                          className="accent-indigo-500"
-                        />
-                        <span>{opt}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex gap-3 pt-2">
-              <button
-                onClick={handleQuizSubmit}
-                disabled={state.loading}
-                className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-5 py-2.5 rounded-xl flex-1 transition-all active:scale-95 cursor-pointer disabled:opacity-50"
-              >
-                Submit & Trigger Adaptation
-              </button>
-              <button
-                onClick={() => setShowQuiz(false)}
-                className="border border-neutral-800 hover:bg-neutral-800 text-neutral-400 text-xs px-4 py-2.5 rounded-xl transition-colors cursor-pointer"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* ── Live Diagnostic Assessment Modal ── */}
+      <DiagnosticQuizModal
+        isOpen={showQuiz}
+        onClose={() => setShowQuiz(false)}
+        currentLearner={state.learner}
+        onAssessmentComplete={handleAssessmentComplete}
+      />
     </div>
   );
 }

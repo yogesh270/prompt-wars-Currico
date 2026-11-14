@@ -49,6 +49,7 @@ export function appReducer(state: AppState, action: AppAction): AppState {
         diff:          action.payload.diff,
         trace:         action.payload.trace,
         mentorMessage: action.payload.mentorMessage,
+        ...(action.payload.updatedLearner ? { learner: action.payload.updatedLearner } : {}),
         error:         null,
       };
 

@@ -142,8 +142,9 @@ export default function Roadmap({ modules, preservedPct, weeklyBudget = 5 }: Roa
 
                             {/* Remediation highlight */}
                             {isRemedial && (
-                              <span className="text-[10px] font-mono bg-purple-950 text-purple-300 border border-purple-700 px-2 py-0.2 rounded font-bold uppercase tracking-wider">
-                                Adaptive Remediation
+                              <span className="text-[10px] font-mono bg-indigo-950/90 text-indigo-300 border border-indigo-500/80 px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider shadow-sm shadow-indigo-500/30 flex items-center gap-1.5 animate-pulse">
+                                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
+                                ADAPTED
                               </span>
                             )}
 

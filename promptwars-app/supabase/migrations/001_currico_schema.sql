@@ -68,3 +68,4 @@ CREATE POLICY "Allow public insert/update on agent_traces" ON public.agent_trace
 CREATE INDEX IF NOT EXISTS idx_learner_skills_learner ON public.learner_skills(learner_id);
 CREATE INDEX IF NOT EXISTS idx_curriculum_plans_learner ON public.curriculum_plans(learner_id);
 CREATE INDEX IF NOT EXISTS idx_agent_traces_plan ON public.agent_traces(plan_id);
+

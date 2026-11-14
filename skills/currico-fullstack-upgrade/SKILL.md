@@ -89,3 +89,4 @@ If any invariant fails:
 2. Run TypeScript build: `npm run build`.
 3. Test custom learner ingestion: upload/matrix edit -> auto-generates chunked plan within weekly hours limit.
 4. Test quiz failure adaptation: verify remediation modules appear with `ADAPTED` badges and next-week load sheds 20%.
+

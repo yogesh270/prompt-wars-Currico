@@ -312,15 +312,15 @@ export const COURSES: Course[] = [
   }
 })();
 
-// ─── Quiz Questions (9: 3 per role) ───────────────────────────────────────────
+// ─── Quiz Questions (15: 5 per role) ──────────────────────────────────────────
 
 export const QUIZ_QUESTIONS: QuizQuestion[] = [
-  // Full Stack
+  // Full Stack (5)
   {
     questionId: "fs-q1", roleId: "full-stack", skillId: "javascript",
-    question: "Which JavaScript keyword creates a block-scoped variable?",
-    options: ["var", "let", "function", "scope"],
-    answerKey: "let",
+    question: "Which JavaScript feature allows an inner function to access variables from its outer enclosing scope?",
+    options: ["Closure", "Hoisting", "Prototype Chaining", "Currying"],
+    answerKey: "Closure",
   },
   {
     questionId: "fs-q2", roleId: "full-stack", skillId: "react",
@@ -329,12 +329,25 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
     answerKey: "useState",
   },
   {
-    questionId: "fs-q3", roleId: "full-stack", skillId: "rest-api",
-    question: "Which HTTP method is idempotent and used to fully replace a resource?",
+    questionId: "fs-q3", roleId: "full-stack", skillId: "typescript",
+    question: "Which TypeScript utility type constructs a type with all properties of Type set to optional?",
+    options: ["Partial<T>", "Required<T>", "Readonly<T>", "Record<K, T>"],
+    answerKey: "Partial<T>",
+  },
+  {
+    questionId: "fs-q4", roleId: "full-stack", skillId: "rest-api",
+    question: "Which HTTP method is idempotent and used to fully replace an existing resource?",
     options: ["POST", "PATCH", "PUT", "DELETE"],
     answerKey: "PUT",
   },
-  // Data Analyst
+  {
+    questionId: "fs-q5", roleId: "full-stack", skillId: "postgres",
+    question: "In PostgreSQL, which constraint enforces referential integrity between two related tables?",
+    options: ["PRIMARY KEY", "FOREIGN KEY", "UNIQUE", "CHECK"],
+    answerKey: "FOREIGN KEY",
+  },
+
+  // Data Analyst (5)
   {
     questionId: "da-q1", roleId: "data-analyst", skillId: "sql",
     question: "Which SQL clause filters groups after aggregation?",
@@ -358,7 +371,20 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
     ],
     answerKey: "The result is statistically significant",
   },
-  // AI Backend
+  {
+    questionId: "da-q4", roleId: "data-analyst", skillId: "python",
+    question: "Which Python built-in function returns both index and value when iterating over a sequence?",
+    options: ["enumerate()", "zip()", "range()", "map()"],
+    answerKey: "enumerate()",
+  },
+  {
+    questionId: "da-q5", roleId: "data-analyst", skillId: "data-viz",
+    question: "Which chart type is best suited for analyzing the relationship between two continuous variables?",
+    options: ["Bar chart", "Pie chart", "Scatter plot", "Histogram"],
+    answerKey: "Scatter plot",
+  },
+
+  // AI Backend (5)
   {
     questionId: "ai-q1", roleId: "ai-backend", skillId: "prompt-eng",
     question: "Which prompting technique asks the model to reason step-by-step before answering?",
@@ -376,6 +402,18 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
     question: "What parameter controls the randomness of LLM outputs (0 = deterministic)?",
     options: ["max_tokens", "top_p", "temperature", "frequency_penalty"],
     answerKey: "temperature",
+  },
+  {
+    questionId: "ai-q4", roleId: "ai-backend", skillId: "fastapi",
+    question: "Which Python keyword is used to define asynchronous route handlers in FastAPI?",
+    options: ["async def", "def sync", "yield def", "await def"],
+    answerKey: "async def",
+  },
+  {
+    questionId: "ai-q5", roleId: "ai-backend", skillId: "ml-basics",
+    question: "What is the primary risk of training a model for too many epochs on noisy data without regularization?",
+    options: ["Overfitting", "Underfitting", "Data drift", "Gradient explosion"],
+    answerKey: "Overfitting",
   },
 ];
 

@@ -97,6 +97,7 @@ export interface Module {
   status: "todo" | "in-progress" | "done";
   diff?: ModuleDiff;
   part?: { current: number; total: number };
+  isRemedial?: boolean;
 }
 
 export interface Plan {
@@ -167,6 +168,7 @@ export interface AdaptResponse {
   trace: AgentEnvelope[];
   mentorMessage: string;
   degraded?: boolean;
+  updatedLearner?: Learner;
 }
 
 export interface HealthResponse {
